@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/bloc/auth/auth_provider.dart';
+import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:beeper_app/src/pages/login_page.dart';
 import 'package:beeper_app/src/routes/routes.dart';
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = new PreferenciasUsuario();
 
-    return AuthProvider(
+    return AppProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Beeper App',

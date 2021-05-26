@@ -4,7 +4,7 @@ import 'package:beeper_app/src/models/user_model.dart';
 import 'package:beeper_app/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:http/http.dart' as http;
 
-class UserProvider {
+class UserService {
   final _prefs = new PreferenciasUsuario();
 
   Future<Map<String, dynamic>> login(String dni, String password) async {
@@ -22,8 +22,7 @@ class UserProvider {
       this._prefs.token = decodedResp['token'];
       this._prefs.id = decodedResp['id'];
 
-      //final usrData = await getUserById(decodedResp['id']);
-      //final User info = usrData['data'];
+      
     
       return {
         'ok': true,

@@ -1,17 +1,22 @@
-import 'package:beeper_app/src/bloc/home/home_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/providers/user_provider.dart';
+import 'package:beeper_app/src/providers/app_provider.dart';
+import 'package:beeper_app/src/services/user_service.dart';
 
-class MenuWidget extends StatelessWidget {
-  final userProvider = new UserProvider();
+class MenuWidget extends StatefulWidget {
+  @override
+  _MenuWidgetState createState() => _MenuWidgetState();
+}
+
+class _MenuWidgetState extends State<MenuWidget> {
+  final userService = new UserService();
 
   @override
   Widget build(BuildContext context) {
-    final homeBloc = HomeProvider.of(context);
-    homeBloc.getUserInformation();
+    final authBloc = AppProvider.of(context);
+    final homeB = AppProvider.homeBloc(context);
 
     return StreamBuilder<Object>(
-      stream: homeBloc.userInfoStream,
+      stream: homeB.userInfoStream,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return Drawer(
           child: SafeArea(
@@ -30,7 +35,7 @@ class MenuWidget extends StatelessWidget {
                       ),
                       SizedBox(height: 30.0),
                       Text(
-                        homeBloc.userInformation.name1 + ' ' + homeBloc.userInformation.lastName1 + ' ' + homeBloc.userInformation.lastName2,
+                        homeB.userInformation.name1 + ' ' + homeB.userInformation.lastName1 + ' ' + homeB.userInformation.lastName2,
                         style: TextStyle(
                           fontSize: 20.0
                         ),
@@ -87,7 +92,9 @@ class MenuWidget extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    this.userProvider.logout();
+                    this.userService.logout();
+                    authBloc.changeDni('');
+                    authBloc.changePassword('');
                     Navigator.pushReplacementNamed(context, 'login');
                   },
                 ),

@@ -1,12 +1,12 @@
-import 'package:beeper_app/src/utils/utils.dart';
+import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/providers/user_provider.dart';
+import 'package:beeper_app/src/services/user_service.dart';
+import 'package:beeper_app/src/utils/utils.dart';
 import 'package:beeper_app/src/bloc/auth/auth_bloc.dart';
-import 'package:beeper_app/src/bloc/auth/auth_provider.dart';
 
 class LoginPage extends StatelessWidget {
   static final String routeName = 'login';
-  final userProvider = new UserProvider();
+  final userProvider = new UserService();
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _loginForm(BuildContext context) {
-    final authBloc = AuthProvider.of(context);
+    final authBloc = AppProvider.of(context);
     final size = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
