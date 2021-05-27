@@ -1,3 +1,4 @@
+import 'package:beeper_app/src/global/environment.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/widgets/menu.dart';

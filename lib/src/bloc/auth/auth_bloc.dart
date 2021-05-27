@@ -4,6 +4,7 @@ import 'package:beeper_app/src/bloc/auth/auth_validators.dart';
 class AuthBloc with AuthValidators{
   final _dniController = BehaviorSubject<String>();
   final _passwordController = BehaviorSubject<String>();
+  bool isLoading = false;
 
   Stream<String> get dniStream => _dniController.stream.transform(validarDni);
   Stream<String> get passwordStream => _passwordController.stream.transform(validarPassword);

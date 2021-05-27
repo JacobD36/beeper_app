@@ -1,28 +1,43 @@
-import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:beeper_app/src/global/environment.dart';
+import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/services/user_service.dart';
 import 'package:beeper_app/src/utils/utils.dart';
 import 'package:beeper_app/src/bloc/auth/auth_bloc.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   static final String routeName = 'login';
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final userProvider = new UserService();
 
   @override
   Widget build(BuildContext context) {
+    final authBloc = AppProvider.of(context);
+
     return Scaffold(
-      body: Stack(
-        children: [
-          _crearFondo(context),
-          _loginForm(context)
-        ],
+      key: Environment.scaffoldKey,
+      body: ModalProgressHUD(
+        child: Stack(
+          children: [
+            _crearFondo(context),
+            _loginForm(context, authBloc)
+          ],
+        ),
+        inAsyncCall: authBloc.isLoading,
+        opacity: 0.5,
+        progressIndicator: CircularProgressIndicator(),
       ),
       backgroundColor: Colors.blue[300],
     );
   }
 
-  Widget _loginForm(BuildContext context) {
-    final authBloc = AppProvider.of(context);
+  Widget _loginForm(BuildContext context, AuthBloc bloc) {
     final size = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
@@ -53,11 +68,11 @@ class LoginPage extends StatelessWidget {
               children: [
                 Text('Ingreso', style: TextStyle(fontSize: 20.0)),
                 SizedBox(height: 60.0),
-                _crearDni(authBloc),
+                _crearDni(bloc),
                 SizedBox(height: 30.0),
-                _crearPassword(authBloc),
+                _crearPassword(bloc),
                 SizedBox(height: 30.0),
-                _crearBoton(authBloc)
+                _crearBoton(bloc)
               ],
             ),
           )
@@ -129,12 +144,20 @@ class LoginPage extends StatelessWidget {
   }
 
   _login(AuthBloc bloc, BuildContext context) async {
+    setState(() {
+      bloc.isLoading = true;  
+    });
+  
     Map<String, dynamic> info = await userProvider.login(bloc.dni, bloc.password);
 
+    setState(() {
+      bloc.isLoading = false;
+    });
+
     if(info['ok']) {
-      Navigator.pushReplacementNamed(context, 'home');
+      Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'home');
     } else {
-      mostrarAlerta(context, info['mensaje'], false);
+      mostrarAlerta(Environment.scaffoldKey.currentContext, info['mensaje'], false);
     }
   }
 

@@ -22,8 +22,6 @@ class UserService {
       this._prefs.token = decodedResp['token'];
       this._prefs.id = decodedResp['id'];
 
-      
-    
       return {
         'ok': true,
         'token': decodedResp['token'],
