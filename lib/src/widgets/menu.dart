@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/services/user_service.dart';
 
@@ -35,7 +36,7 @@ class _MenuWidgetState extends State<MenuWidget> {
                       ),
                       SizedBox(height: 30.0),
                       Text(
-                        homeB.userInformation.name1 + ' ' + homeB.userInformation.lastName1 + ' ' + homeB.userInformation.lastName2,
+                        Utf8Decoder().convert((homeB.userInformation.name1 + ' ' + homeB.userInformation.lastName1 + ' ' + homeB.userInformation.lastName2).codeUnits) ,
                         style: TextStyle(
                           fontSize: 20.0
                         ),
@@ -45,6 +46,18 @@ class _MenuWidgetState extends State<MenuWidget> {
                   decoration: BoxDecoration(
                     color: Colors.blue[300],
                   ),
+                ),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.account_balance),
+                      SizedBox(width: 5.0),
+                      Text('INICIO'),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, 'home');
+                  },
                 ),
                 ListTile(
                   title: Row(
@@ -67,7 +80,7 @@ class _MenuWidgetState extends State<MenuWidget> {
                     ],
                   ),
                   onTap: () {
-                    
+                    Navigator.pushReplacementNamed(context, 'campaign');
                   },
                 ),
                 ListTile(
@@ -79,8 +92,8 @@ class _MenuWidgetState extends State<MenuWidget> {
                     ],
                   ),
                   onTap: () {
-                    
-                  },
+                    Navigator.pushReplacementNamed(context, 'config');
+                  }
                 ),
                 Divider(),
                 ListTile(

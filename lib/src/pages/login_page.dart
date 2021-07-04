@@ -157,6 +157,8 @@ class _LoginPageState extends State<LoginPage> {
     if(info['ok']) {
       Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'home');
     } else {
+      bloc.changeDni('');
+      bloc.changePassword('');
       mostrarAlerta(Environment.scaffoldKey.currentContext, info['mensaje'], false);
     }
   }

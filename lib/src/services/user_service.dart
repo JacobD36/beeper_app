@@ -40,7 +40,7 @@ class UserService {
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer'+this._prefs.token
+      'Authorization': 'Bearer'+this._prefs.token,
     };
 
     final resp = await http.get(url, headers: headers);
