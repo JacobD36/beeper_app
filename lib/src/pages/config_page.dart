@@ -1,3 +1,5 @@
+import 'package:beeper_app/src/pages/config/new_campus.dart';
+import 'package:beeper_app/src/pages/config/profiles_page.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,7 @@ class ConfigPage extends StatelessWidget {
             child: Column(
               children: [
                 _titulos(),
-                _botonesRedondeados()
+                _botonesRedondeados(context)
               ],
             ),
           )
@@ -57,19 +59,35 @@ class ConfigPage extends StatelessWidget {
     );
   }
 
-   Widget _botonesRedondeados() {
+   Widget _botonesRedondeados(BuildContext context) {
     return Table(
       children: [
         TableRow(
           children: [
-            _crearBotonRedondeado(Colors.blue, Icons.account_balance_sharp, 'Sedes'),
-            _crearBotonRedondeado(Colors.green, Icons.account_circle_rounded, 'Perfiles')
+            GestureDetector(
+              child: _crearBotonRedondeado(Colors.blue, Icons.account_balance_sharp, 'Sedes'),
+              onTap: () {}
+            ),
+            GestureDetector(
+              child: _crearBotonRedondeado(Colors.green, Icons.account_circle_rounded, 'Perfiles'),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilesPage()))
+            ),
           ]
         ),
         TableRow(
           children: [
-            _crearBotonRedondeado(Colors.purpleAccent, Icons.assignment_ind_outlined, 'Personal'),
-            _crearBotonRedondeado(Colors.pinkAccent, Icons.assignment_ind_outlined, 'Personal')
+            GestureDetector(
+              child: _crearBotonRedondeado(Colors.purpleAccent, Icons.assignment_ind_outlined, 'Puestos'),
+              onTap: () {
+                print("Puestos");
+              },
+            ),
+            GestureDetector(
+              child: _crearBotonRedondeado(Colors.pinkAccent, Icons.assignment_ind_outlined, 'Personal'),
+              onTap: () {
+                print("Personal");
+              },
+            ),
           ]
         )
       ],

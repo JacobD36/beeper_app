@@ -1,3 +1,6 @@
+import 'package:beeper_app/src/pages/campaign_page.dart';
+import 'package:beeper_app/src/pages/config_page.dart';
+import 'package:beeper_app/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:beeper_app/src/providers/app_provider.dart';
@@ -56,7 +59,8 @@ class _MenuWidgetState extends State<MenuWidget> {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, 'home');
+                    //Navigator.pushReplacementNamed(context, 'home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                   },
                 ),
                 ListTile(
@@ -80,7 +84,8 @@ class _MenuWidgetState extends State<MenuWidget> {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, 'campaign');
+                    //Navigator.pushReplacementNamed(context, 'campaign');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CampaignPage()));
                   },
                 ),
                 ListTile(
@@ -92,7 +97,8 @@ class _MenuWidgetState extends State<MenuWidget> {
                     ],
                   ),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, 'config');
+                    //Navigator.pushReplacementNamed(context, 'config');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ConfigPage()));
                   }
                 ),
                 Divider(),

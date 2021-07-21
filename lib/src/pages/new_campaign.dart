@@ -1,9 +1,12 @@
-import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:beeper_app/src/models/campaign_model.dart';
+import 'package:beeper_app/src/providers/app_provider.dart';
+import 'package:beeper_app/src/services/campaign_service.dart';
 import 'package:beeper_app/src/bloc/campaign/new_campaign_bloc.dart';
 import 'package:beeper_app/src/global/environment.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 
 class NewCampaign extends StatefulWidget {
@@ -15,6 +18,7 @@ class NewCampaign extends StatefulWidget {
 
 class _NewCampaignState extends State<NewCampaign> {
   final TextEditingController _controller = new TextEditingController();
+  final campaignProvider = new CampaignService();
   String _fecha = '';
 
   @override
@@ -29,11 +33,14 @@ class _NewCampaignState extends State<NewCampaign> {
       drawer: Drawer(
         child: MenuWidget()
       ),
-      body: Stack(
-        children: [
-          BackDesign(),
-          _formData(context, newCampaignBloc)
-        ]
+      body: ModalProgressHUD(
+        inAsyncCall: newCampaignBloc.isLoading, 
+        child: Stack(
+          children: [
+            BackDesign(),
+            _formData(context, newCampaignBloc)
+          ]
+        )
       )
     );
   }
@@ -78,7 +85,8 @@ class _NewCampaignState extends State<NewCampaign> {
     return StreamBuilder(
       stream: bloc.nameStream,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        return TextField(
+        return TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _controller,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
@@ -96,10 +104,16 @@ class _NewCampaignState extends State<NewCampaign> {
             labelStyle: new TextStyle(
               color: Colors.white
             ),
-            errorText: snapshot.error
+            //errorText: snapshot.error
           ),
           style: TextStyle(color: Colors.white),
           onChanged: bloc.changeName,
+          validator: (value) {
+            if(value != null && value.length >= 3) {
+              return null;
+            }
+            return snapshot.error;
+          },
         );
       }
     );
@@ -109,7 +123,8 @@ class _NewCampaignState extends State<NewCampaign> {
     return StreamBuilder(
       stream: bloc.descStream,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        return TextField(
+        return TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           maxLines: 3,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
@@ -127,10 +142,16 @@ class _NewCampaignState extends State<NewCampaign> {
             labelStyle: new TextStyle(
               color: Colors.white
             ),
-            errorText: snapshot.error
+            //errorText: snapshot.error
           ),
           style: TextStyle(color: Colors.white),
           onChanged: bloc.changeDesc,
+          validator: (value) {
+            if(value != null && value.length >= 20) {
+              return null;
+            }
+            return snapshot.error;
+          },
         );
       }
     );
@@ -141,7 +162,8 @@ class _NewCampaignState extends State<NewCampaign> {
       stream: bloc.responsableStream,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         return 
-        TextField(
+        TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           enableInteractiveSelection: false,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
@@ -159,10 +181,16 @@ class _NewCampaignState extends State<NewCampaign> {
             labelStyle: new TextStyle(
               color: Colors.white
             ),
-            errorText: snapshot.error
+            //errorText: snapshot.error
           ),
           style: TextStyle(color: Colors.white),
           onChanged: bloc.changeResponsable,
+          validator: (value) {
+            if(value != null && value.length >= 3) {
+              return null;
+            }
+            return snapshot.error;
+          },
         );
       }
     );
@@ -172,8 +200,10 @@ class _NewCampaignState extends State<NewCampaign> {
     return StreamBuilder(
       stream: bloc.phoneStream,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        return TextField(
+        return TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           enableInteractiveSelection: false,
+          keyboardType: TextInputType.number,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.white),
@@ -190,10 +220,16 @@ class _NewCampaignState extends State<NewCampaign> {
             labelStyle: new TextStyle(
               color: Colors.white
             ),
-            errorText: snapshot.error
+            //errorText: snapshot.error
           ),
           style: TextStyle(color: Colors.white),
           onChanged: bloc.changePhone,
+          validator: (value) {
+            if(value != null && value.length >= 8) {
+              return null;
+            }
+            return snapshot.error;
+          },
         );
       }
     );
@@ -215,7 +251,21 @@ class _NewCampaignState extends State<NewCampaign> {
     }
   }
 
+   _saveCampaign(Campaign camp, NewCampaignBloc bloc) {
+    setState(() {
+      bloc.isLoading = true;
+    });
+
+     this.campaignProvider.saveCampaign(camp);
+
+    setState(() {
+      bloc.isLoading = false;
+    });
+  }
+
   Widget _buttonList(BuildContext context, NewCampaignBloc bloc) {
+    final Campaign campData = new Campaign();
+
     return Container(
       child: Center(
         child: Row(
@@ -235,7 +285,19 @@ class _NewCampaignState extends State<NewCampaign> {
                     backgroundColor: snapshot.hasData? MaterialStateProperty.all(Colors.blue[600]) : MaterialStateProperty.all(Colors.grey[600]),
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)))
                   ),
-                  onPressed: snapshot.hasData? () => {} : null
+                  onPressed: snapshot.hasData? () {
+                    campData.title = bloc.name;
+                    campData.desc = bloc.desc;
+                    campData.responsable = bloc.resp;
+                    campData.phone = bloc.phone;
+                    _saveCampaign(campData, bloc);
+                    bloc.changeName('');
+                    bloc.changeDesc('');
+                    bloc.changeResponsable('');
+                    bloc.changePhone('');
+                    _controller.clear();
+                    Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                  } : null
                 );
               }
             ),
@@ -253,6 +315,9 @@ class _NewCampaignState extends State<NewCampaign> {
               ),
               onPressed: () {
                 bloc.changeName('');
+                bloc.changeDesc('');
+                bloc.changeResponsable('');
+                bloc.changePhone('');
                 _controller.clear();
                 Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
               }

@@ -6,7 +6,7 @@ class NewCampaignValidators {
       if(name.length >= 3) {
         sink.add(name);
       } else {
-        sink.addError('El nombre de la campaña debe contener al menos 3 caracteres');
+        sink.addError('Mínimo 3 caracteres');
       }
     }
   );
@@ -16,7 +16,7 @@ class NewCampaignValidators {
       if(desc.length >= 20) {
         sink.add(desc);
       } else {
-        sink.addError('La descripción de la campaña debe contener al menos 20 caracteres');
+        sink.addError('Mínino 20 caracteres');
       }
     }
   );
@@ -26,7 +26,7 @@ class NewCampaignValidators {
       if(fStart.length >= 3) {
         sink.add(fStart);
       } else {
-        sink.addError('Por favor, ingrese un nombre para el responsable');
+        sink.addError('Mínimo 3 caracteres');
       }
     }
   );
@@ -36,7 +36,7 @@ class NewCampaignValidators {
       if(fEnd.length >= 8) {
         sink.add(fEnd);
       } else {
-        sink.addError('Por favor, ingrese un número telefónico válido');
+        sink.addError('Número telefónico válido');
       }
     }
   );

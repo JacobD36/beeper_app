@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
           const Locale('en', 'US'),
           const Locale('es', 'ES')
         ],
-        //initialRoute: prefs.token == '' ? 'login' : 'home',
-        initialRoute: 'login',
+        initialRoute: prefs.token == '' ? 'login' : 'home',
+        //initialRoute: 'login',
         routes: appRoutes(),
         onGenerateRoute: (RouteSettings settings) {
           return MaterialPageRoute(

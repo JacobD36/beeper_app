@@ -1,5 +1,8 @@
 import 'package:beeper_app/src/bloc/campaign/new_campaign_bloc.dart';
+import 'package:beeper_app/src/bloc/campus/new_campus_bloc.dart';
 import 'package:beeper_app/src/bloc/config/campaign_bloc.dart';
+import 'package:beeper_app/src/bloc/profile/new_profile_bloc.dart';
+import 'package:beeper_app/src/bloc/profile/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/bloc/home/home_bloc.dart';
 import 'package:beeper_app/src/bloc/auth/auth_bloc.dart';
@@ -9,6 +12,9 @@ class AppProvider extends InheritedWidget {
   final _homeBloc = new HomeBloc();
   final _campaignBloc = new CampaignBloc();
   final  _newCampaignBloc = new NewCampaignBloc();
+  final _profileBloc = new ProfileBloc();
+  final _newProfileBloc = NewProfileBloc();
+  final _newCampusBloc = NewCampusBloc();
 
   static AppProvider _instancia;
 
@@ -39,5 +45,17 @@ class AppProvider extends InheritedWidget {
 
   static NewCampaignBloc newCampaignBloc(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<AppProvider>()._newCampaignBloc;
+  }
+
+  static ProfileBloc profileBloc(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppProvider>()._profileBloc;
+  }
+
+  static NewProfileBloc newProfileBloc(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppProvider>()._newProfileBloc;
+  }
+
+  static NewCampusBloc newCampusBloc(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppProvider>()._newCampusBloc;
   }
 }

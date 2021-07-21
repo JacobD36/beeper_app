@@ -20,6 +20,11 @@ class NewCampaignBloc with NewCampaignValidators{
   Function(String) get changeResponsable => _responsableController.sink.add;
   Function(String) get changePhone => _phoneController.sink.add;
 
+  String get name => _nameController.value;
+  String get desc => _descController.value;
+  String get resp => _responsableController.value;
+  String get phone => _phoneController.value;
+
   dispose() {
     _nameController?.close();
     _descController?.close();
