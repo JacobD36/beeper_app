@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/pages/config/new_campus.dart';
 import 'package:beeper_app/src/pages/config/profiles_page.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
@@ -9,25 +10,28 @@ class ConfigPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Configuración'),
-      ),
-      drawer: Drawer(
-        child: MenuWidget()
-      ),
-      body: Stack(
-        children: [
-          BackDesign(),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                _titulos(),
-                _botonesRedondeados(context)
-              ],
-            ),
-          )
-        ],
+    return WillPopScope(
+      onWillPop: () => exit(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Configuración'),
+        ),
+        drawer: Drawer(
+          child: MenuWidget()
+        ),
+        body: Stack(
+          children: [
+            BackDesign(),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  _titulos(),
+                  _botonesRedondeados(context)
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

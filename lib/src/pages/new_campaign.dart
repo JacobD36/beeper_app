@@ -251,12 +251,12 @@ class _NewCampaignState extends State<NewCampaign> {
     }
   }
 
-   _saveCampaign(Campaign camp, NewCampaignBloc bloc) {
+   _saveCampaign(Campaign camp, NewCampaignBloc bloc) async {
     setState(() {
       bloc.isLoading = true;
     });
 
-     this.campaignProvider.saveCampaign(camp);
+    await this.campaignProvider.saveCampaign(camp);
 
     setState(() {
       bloc.isLoading = false;
@@ -296,8 +296,8 @@ class _NewCampaignState extends State<NewCampaign> {
                     bloc.changeResponsable('');
                     bloc.changePhone('');
                     _controller.clear();
-                    //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                    //Navigator.of(context).pop();
                   } : null
                 );
               }
@@ -320,7 +320,8 @@ class _NewCampaignState extends State<NewCampaign> {
                 bloc.changeResponsable('');
                 bloc.changePhone('');
                 _controller.clear();
-                Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                Navigator.of(context).pop();
               }
             )
           ],

@@ -20,6 +20,7 @@ class _CampaignPageState extends State<CampaignPage> {
   Widget build(BuildContext context) {
     final campaignBloc = AppProvider.campaignBloc(context);
     campaignBloc.loadCampaigns('', '1');
+    setState(() {});
     
     return WillPopScope(
       onWillPop: () => exit(0),
@@ -70,47 +71,6 @@ class _CampaignPageState extends State<CampaignPage> {
     );
   }
 
-  Widget _campItem(BuildContext context, CampaignBloc bloc, Campaign campaign) {
-    final size = MediaQuery.of(context).size;
-
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-        child: Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: null,
-      child: GestureDetector(
-        onTap: () {
-        
-        },
-        child: Container(
-          padding: EdgeInsets.all(10.0),
-          width: size.width,
-          margin: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            color: Color.fromRGBO(62, 66, 107, 0.7),
-            borderRadius: BorderRadius.circular(10.0)
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 5.0),
-              Row(
-                children: [
-                  Text(campaign.title, style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold)),
-                ],
-              ),
-              SizedBox(height: 5.0),
-              Text(campaign.desc, style: TextStyle(color: Colors.white)),
-              SizedBox(height: 5.0)
-            ],
-          ),
-        ),
-      )
-    );
-  }
-
   Widget _campItem2(BuildContext context, CampaignBloc bloc, Campaign campaign) {
     final size = MediaQuery.of(context).size;
 
@@ -139,31 +99,6 @@ class _CampaignPageState extends State<CampaignPage> {
             subtitle: Text(campaign.desc, style: TextStyle(color: Colors.white)),
           ),
         ),
-      )
-    );
-  }
-
-  Widget _campItem3(BuildContext context, CampaignBloc bloc, Campaign campaign) { 
-    final size = MediaQuery.of(context).size;
-
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-        child: Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: null,
-      child: GestureDetector(
-        onTap: () {
-        
-        },
-        child: Card(
-          child: ListTile(
-            title: Text(campaign.title),
-            subtitle: Text(campaign.desc),
-            onTap: () {},
-          ),
-        )
       )
     );
   }

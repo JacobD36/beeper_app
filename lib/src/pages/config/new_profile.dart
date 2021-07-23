@@ -109,16 +109,10 @@ class _NewProfileState extends State<NewProfile> {
     );
   }
 
-  _saveProfile(Profile profile, NewProfileBloc bloc) {
-    setState(() {
-      bloc.isLoading = true;
-    });
-
-     this.profileProvider.saveProfile(profile);
-
-    setState(() {
-      bloc.isLoading = false;
-    });
+  _saveProfile(Profile profile, NewProfileBloc bloc) async {
+    final profileBloc = AppProvider.profileBloc(context);
+    await this.profileProvider.saveProfile(profile);
+    profileBloc.loadProfiles('', '1');
   }
 
   Widget _buttonList(BuildContext context, NewProfileBloc bloc) {
@@ -144,11 +138,15 @@ class _NewProfileState extends State<NewProfile> {
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)))
                   ),
                   onPressed: snapshot.hasData? () {
+                    bloc.isLoading = true;
+                    setState(() {});
                     profileData.title = bloc.name;
                     _saveProfile(profileData, bloc);
+                    bloc.isLoading = false;
+                    setState(() {});
                     bloc.changeName('');
-                    //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                    //Navigator.of(context).pop();
                   } : null
                 );
               }
@@ -167,7 +165,8 @@ class _NewProfileState extends State<NewProfile> {
               ),
               onPressed: () {
                 bloc.changeName('');
-                Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                Navigator.of(context).pop();
               }
             )
           ],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/config/new_profile.dart';
 import 'package:beeper_app/src/bloc/profile/profile_bloc.dart';
@@ -18,23 +20,27 @@ class _ProfilesPageState extends State<ProfilesPage> {
   Widget build(BuildContext context) {
     final profileBloc = AppProvider.profileBloc(context);
     profileBloc.loadProfiles('', '1');
+    setState(() {});
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Perfiles'),
-      ),
-      drawer: Drawer(
-        child: MenuWidget()
-      ),
-      body: Stack(
-        children: [
-          BackDesign(),
-          _profileList(profileBloc)
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add_circle_outline),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewProfile())),
+    return WillPopScope(
+      onWillPop: () => exit(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Perfiles'),
+        ),
+        drawer: Drawer(
+          child: MenuWidget()
+        ),
+        body: Stack(
+          children: [
+            BackDesign(),
+            _profileList(profileBloc)
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add_circle_outline),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewProfile())),
+        ),
       ),
     );
   }

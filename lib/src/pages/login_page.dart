@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/global/environment.dart';
 import 'package:beeper_app/src/providers/app_provider.dart';
@@ -20,20 +22,23 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final authBloc = AppProvider.of(context);
 
-    return Scaffold(
-      key: Environment.scaffoldKey,
-      body: ModalProgressHUD(
-        child: Stack(
-          children: [
-            _crearFondo(context),
-            _loginForm(context, authBloc)
-          ],
+    return WillPopScope(
+      onWillPop: () => exit(0),
+      child: Scaffold(
+        key: Environment.scaffoldKey,
+        body: ModalProgressHUD(
+          child: Stack(
+            children: [
+              _crearFondo(context),
+              _loginForm(context, authBloc)
+            ],
+          ),
+          inAsyncCall: authBloc.isLoading,
+          opacity: 0.5,
+          progressIndicator: CircularProgressIndicator(),
         ),
-        inAsyncCall: authBloc.isLoading,
-        opacity: 0.5,
-        progressIndicator: CircularProgressIndicator(),
+        backgroundColor: Colors.blue[300],
       ),
-      backgroundColor: Colors.blue[300],
     );
   }
 
