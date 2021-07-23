@@ -87,15 +87,26 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot){
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextField(
+          child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               icon: Icon(Icons.contact_mail, color: Colors.blue[600]),
               hintText: 'Ingrese su documento de identidad',
               labelText: 'DNI',
-              errorText: snapshot.error
+              //errorText: snapshot.error
             ),
             onChanged: bloc.changeDni,
+            validator: (value) {
+              Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+              RegExp regExp   = new RegExp(pattern);
+
+              if ( value != null && regExp.hasMatch( value ) ) {
+                return null;
+              }
+
+              return snapshot.error;
+            },
           ),
         );  
       },
@@ -108,14 +119,21 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot){
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextField(
+          child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             obscureText: true,
             decoration: InputDecoration(
               icon: Icon(Icons.lock_outline, color: Colors.blue[600]),
               labelText: 'Contraseña',
-              errorText: snapshot.error
+              //errorText: snapshot.error
             ),
-            onChanged: bloc.changePassword
+            onChanged: bloc.changePassword,
+            validator: (value) {
+              if(value != null && value.length >= 8) {
+                return null;
+              }
+              return snapshot.error;
+            },
           ),
         );  
       },
@@ -157,6 +175,8 @@ class _LoginPageState extends State<LoginPage> {
     if(info['ok']) {
       Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'home');
     } else {
+      bloc.changeDni('');
+      bloc.changePassword('');
       mostrarAlerta(Environment.scaffoldKey.currentContext, info['mensaje'], false);
     }
   }

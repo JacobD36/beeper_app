@@ -1,5 +1,5 @@
-import 'package:beeper_app/src/global/environment.dart';
 import 'package:flutter/material.dart';
+import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
 
@@ -18,7 +18,13 @@ class HomePage extends StatelessWidget {
       drawer: Drawer(
         child: MenuWidget()
       ),
-      body: Container(),
+      body: Stack(
+        children: [
+          BackDesign()
+        ],
+      ),
     );
   }
+
+  
 }
