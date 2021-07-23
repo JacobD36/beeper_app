@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/bloc/config/campaign_bloc.dart';
 import 'package:beeper_app/src/models/campaign_model.dart';
@@ -19,22 +21,25 @@ class _CampaignPageState extends State<CampaignPage> {
     final campaignBloc = AppProvider.campaignBloc(context);
     campaignBloc.loadCampaigns('', '1');
     
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Campañas'),
-      ),
-      drawer: Drawer(
-        child: MenuWidget()
-      ),
-      body: Stack(
-        children: [
-          BackDesign(),
-          _campList(campaignBloc),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add_circle_outline),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewCampaign())),
+    return WillPopScope(
+      onWillPop: () => exit(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Campañas'),
+        ),
+        drawer: Drawer(
+          child: MenuWidget()
+        ),
+        body: Stack(
+          children: [
+            BackDesign(),
+            _campList(campaignBloc),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add_circle_outline),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewCampaign())),
+        ),
       ),
     );
   }

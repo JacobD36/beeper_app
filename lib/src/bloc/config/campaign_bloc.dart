@@ -17,3 +17,5 @@ class CampaignBloc {
     _campaignInfo?.close();
   }
 }
+
+final campBloc = CampaignBloc();

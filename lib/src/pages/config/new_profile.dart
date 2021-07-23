@@ -147,7 +147,8 @@ class _NewProfileState extends State<NewProfile> {
                     profileData.title = bloc.name;
                     _saveProfile(profileData, bloc);
                     bloc.changeName('');
-                    Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                    //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                    Navigator.of(context).pop();
                   } : null
                 );
               }

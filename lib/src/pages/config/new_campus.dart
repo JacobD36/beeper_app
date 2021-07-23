@@ -83,7 +83,7 @@ class _NewCampusState extends State<NewCampus> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               autocorrect: false,
               decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(20.0)
                 ),

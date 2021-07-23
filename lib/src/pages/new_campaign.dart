@@ -296,7 +296,8 @@ class _NewCampaignState extends State<NewCampaign> {
                     bloc.changeResponsable('');
                     bloc.changePhone('');
                     _controller.clear();
-                    Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                    //Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campaign');
+                    Navigator.of(context).pop();
                   } : null
                 );
               }

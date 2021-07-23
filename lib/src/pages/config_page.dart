@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/config/new_campus.dart';
 import 'package:beeper_app/src/pages/config/profiles_page.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
-import 'package:flutter/material.dart';
 
 class ConfigPage extends StatelessWidget {
   static final String routeName = 'config';
