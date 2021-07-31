@@ -1,12 +1,11 @@
 import 'dart:io';
-
+import 'package:beeper_app/src/services/config_service.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/config/new_profile.dart';
-import 'package:beeper_app/src/bloc/profile/profile_bloc.dart';
-import 'package:beeper_app/src/models/profile_model.dart';
-import 'package:beeper_app/src/providers/app_provider.dart';
+import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
+import 'package:provider/provider.dart';
 
 class ProfilesPage extends StatefulWidget {
   static final String routeName = 'profiles';
@@ -18,9 +17,7 @@ class ProfilesPage extends StatefulWidget {
 class _ProfilesPageState extends State<ProfilesPage> {
   @override
   Widget build(BuildContext context) {
-    final profileBloc = AppProvider.profileBloc(context);
-    profileBloc.loadProfiles('', '1');
-    setState(() {});
+    final profileService = Provider.of<ConfigService>(context);
 
     return WillPopScope(
       onWillPop: () => exit(0),
@@ -34,7 +31,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
         body: Stack(
           children: [
             BackDesign(),
-            _profileList(profileBloc)
+            _profileList(profileService.profileInfo)
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -45,33 +42,22 @@ class _ProfilesPageState extends State<ProfilesPage> {
     );
   }
 
-  Widget _profileList(ProfileBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.profileInfoStream,
-      builder: (BuildContext context, AsyncSnapshot<List<Profile>> snapshot) {
-        if(snapshot.hasData) {
-          final profiles = snapshot.data;
+  Widget _profileList(List<Profile> profiles) {
+    if(profiles == null) return CircularProgressIndicator();
 
-          if(profiles.length == 0) {
-            return Center(
-              child: _noData(),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: profiles.length,
-              itemBuilder: (context, i) => _profileItem(context, bloc, profiles[i])
-            );
-          }
-        } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }    
-      }
-    );
+    if(profiles.length == 0) {
+      return Center(
+        child: _noData(),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: profiles.length,
+        itemBuilder: (context, i) => _profileItem(context, profiles[i])
+      );
+    }
   }
 
-  Widget _profileItem(BuildContext context, ProfileBloc bloc, Profile profile) {
+  Widget _profileItem(BuildContext context, Profile profile) {
     final size = MediaQuery.of(context).size;
 
     return Dismissible(

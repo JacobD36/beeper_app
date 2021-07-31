@@ -1,12 +1,12 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/bloc/config/campaign_bloc.dart';
-import 'package:beeper_app/src/models/campaign_model.dart';
+import 'package:beeper_app/src/services/config_service.dart';
+import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/pages/new_campaign.dart';
-import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 
 class CampaignPage extends StatefulWidget {
   static final String routeName = 'campaign';
@@ -18,9 +18,7 @@ class CampaignPage extends StatefulWidget {
 class _CampaignPageState extends State<CampaignPage> {
   @override
   Widget build(BuildContext context) {
-    final campaignBloc = AppProvider.campaignBloc(context);
-    campaignBloc.loadCampaigns('', '1');
-    setState(() {});
+    final campaignService = Provider.of<ConfigService>(context);
     
     return WillPopScope(
       onWillPop: () => exit(0),
@@ -31,11 +29,14 @@ class _CampaignPageState extends State<CampaignPage> {
         drawer: Drawer(
           child: MenuWidget()
         ),
-        body: Stack(
-          children: [
-            BackDesign(),
-            _campList(campaignBloc),
-          ],
+        body: ModalProgressHUD(
+          child: Stack(
+            children: [
+              BackDesign(),
+              _campList(campaignService.campaignInfo),
+            ],
+          ),
+          inAsyncCall: campaignService.isLoading,
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add_circle_outline),
@@ -45,33 +46,21 @@ class _CampaignPageState extends State<CampaignPage> {
     );
   }
 
-  Widget _campList(CampaignBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.campaignInfoStream,
-      builder: (BuildContext context, AsyncSnapshot<List<Campaign>> snapshot) {
-        if(snapshot.hasData) {
-          final campaigns = snapshot.data;
-
-          if(campaigns.length == 0) {
-            return Center(
-              child: _noData(),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: campaigns.length,
-              itemBuilder: (context, i) => _campItem2(context, bloc, campaigns[i])
-            );
-          }
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+  Widget _campList(List<Campaign> campaigns) {
+    if(campaigns == null) return CircularProgressIndicator();
+    if(campaigns.length == 0) {
+      return Center(
+        child: _noData(),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: campaigns.length,
+        itemBuilder: (context, i) => _campItem2(context, campaigns[i]),
+      );
+    }
   }
 
-  Widget _campItem2(BuildContext context, CampaignBloc bloc, Campaign campaign) {
+  Widget _campItem2(BuildContext context, Campaign campaign) {
     final size = MediaQuery.of(context).size;
 
     return Dismissible(

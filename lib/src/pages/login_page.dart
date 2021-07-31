@@ -1,12 +1,11 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:beeper_app/src/providers/login_form_provider.dart';
 import 'package:beeper_app/src/global/environment.dart';
-import 'package:beeper_app/src/providers/app_provider.dart';
 import 'package:beeper_app/src/services/user_service.dart';
 import 'package:beeper_app/src/utils/utils.dart';
-import 'package:beeper_app/src/bloc/auth/auth_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   static final String routeName = 'login';
@@ -16,11 +15,24 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final userProvider = new UserService();
+  final dniController = new TextEditingController();
+  final passController = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    dniController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = AppProvider.of(context);
+    final loginForm = Provider.of<LoginFormProvider>(context);
+    final userInformation = Provider.of<UserService>(context);
 
     return WillPopScope(
       onWillPop: () => exit(0),
@@ -30,10 +42,10 @@ class _LoginPageState extends State<LoginPage> {
           child: Stack(
             children: [
               _crearFondo(context),
-              _loginForm(context, authBloc)
+              _loginForm(context, loginForm, userInformation)
             ],
           ),
-          inAsyncCall: authBloc.isLoading,
+          inAsyncCall: loginForm.isLoading,
           opacity: 0.5,
           progressIndicator: CircularProgressIndicator(),
         ),
@@ -42,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _loginForm(BuildContext context, AuthBloc bloc) {
+  Widget _loginForm(BuildContext context, LoginFormProvider loginForm, UserService userInformation) {
     final size = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
@@ -69,16 +81,20 @@ class _LoginPageState extends State<LoginPage> {
                 )
               ]
             ),
-            child: Column(
-              children: [
-                Text('Ingreso', style: TextStyle(fontSize: 20.0)),
-                SizedBox(height: 60.0),
-                _crearDni(bloc),
-                SizedBox(height: 30.0),
-                _crearPassword(bloc),
-                SizedBox(height: 30.0),
-                _crearBoton(bloc)
-              ],
+            child: Form(
+              key: loginForm.formKey,
+              //autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                children: [
+                  Text('Ingreso', style: TextStyle(fontSize: 20.0)),
+                  SizedBox(height: 60.0),
+                  _crearDni(loginForm, dniController),
+                  SizedBox(height: 30.0),
+                  _crearPassword(loginForm, passController),
+                  SizedBox(height: 30.0),
+                  _crearBoton(loginForm, userInformation, dniController, passController)
+                ],
+              ),
             ),
           )
         ],
@@ -86,103 +102,78 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _crearDni(AuthBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.dniStream ,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot){
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              icon: Icon(Icons.contact_mail, color: Colors.blue[600]),
-              hintText: 'Ingrese su documento de identidad',
-              labelText: 'DNI',
-              //errorText: snapshot.error
-            ),
-            onChanged: bloc.changeDni,
-            validator: (value) {
-              Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-              RegExp regExp   = new RegExp(pattern);
-
-              if ( value != null && regExp.hasMatch( value ) ) {
-                return null;
-              }
-
-              return snapshot.error;
-            },
-          ),
-        );  
-      },
+  Widget _crearDni(LoginFormProvider loginForm, TextEditingController dniController) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: dniController,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          icon: Icon(Icons.contact_mail, color: Colors.blue[600]),
+          hintText: 'Ingrese su documento de identidad',
+          labelText: 'DNI',
+        ),
+        onChanged: (value) => loginForm.dni = value,
+        validator: (value) {
+          return (value != null && value.length >= 8) ? null : 'El DNI debe contener al menos 8 dígitos';
+        },
+      ),
     );
   }
 
-  Widget _crearPassword(AuthBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.passwordStream ,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot){
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: TextFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            obscureText: true,
-            decoration: InputDecoration(
-              icon: Icon(Icons.lock_outline, color: Colors.blue[600]),
-              labelText: 'Contraseña',
-              //errorText: snapshot.error
-            ),
-            onChanged: bloc.changePassword,
-            validator: (value) {
-              if(value != null && value.length >= 8) {
-                return null;
-              }
-              return snapshot.error;
-            },
-          ),
-        );  
-      },
+  Widget _crearPassword(LoginFormProvider loginForm, TextEditingController passController) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: passController,
+        obscureText: true,
+        decoration: InputDecoration(
+          icon: Icon(Icons.lock_outline, color: Colors.blue[600]),
+          labelText: 'Contraseña',
+        ),
+        onChanged: (value) => loginForm.password = value,
+        validator: (value) {
+          return (value != null && value.length >= 6) ? null : 'El password debe contener al menos 6 caracteres'; 
+        },
+      ),
     );
   }
 
-  Widget _crearBoton(AuthBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.formValidStream,
-      builder: (BuildContext context, AsyncSnapshot snapshot){
-        return ElevatedButton(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
-            child: Text('Ingresar'),
-          ),
-          style: ButtonStyle(
-            elevation: MaterialStateProperty.all(0.0),
-            foregroundColor: MaterialStateProperty.all(Colors.white),
-            backgroundColor: snapshot.hasData? MaterialStateProperty.all(Colors.blue[600]) : MaterialStateProperty.all(Colors.grey[600]),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)))
-          ),
-          onPressed: snapshot.hasData? () => _login(bloc, context) : null
-        );  
-      },
+  Widget _crearBoton(LoginFormProvider loginForm, UserService userInformation, TextEditingController dniController, TextEditingController passController) {
+    return ElevatedButton(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
+        child: Text(loginForm.isLoading ? 'Espere' : 'Ingresar'),
+      ),
+      style: ButtonStyle(
+        elevation: MaterialStateProperty.all(0.0),
+        foregroundColor: MaterialStateProperty.all(Colors.white),
+        backgroundColor: loginForm.isLoading ? MaterialStateProperty.all(Colors.grey[600]) : MaterialStateProperty.all(Colors.blue[600]),
+        shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)))
+      ),
+      onPressed: loginForm.isLoading ? null : () => _login(loginForm, context, userInformation, dniController, passController)
     );
   }
 
-  _login(AuthBloc bloc, BuildContext context) async {
-    setState(() {
-      bloc.isLoading = true;  
-    });
+  _login(LoginFormProvider loginForm, BuildContext context, UserService userInformation, TextEditingController dniController, TextEditingController passController) async {
+    FocusScope.of(context).unfocus();
+
+    if(!loginForm.isValidForm()) return;
+    
+    loginForm.isLoading = true;  
   
-    Map<String, dynamic> info = await userProvider.login(bloc.dni, bloc.password);
+    Map<String, dynamic> info = await  userInformation.login(loginForm.dni, loginForm.password);
 
-    setState(() {
-      bloc.isLoading = false;
-    });
-
+    loginForm.isLoading = false;
+    
     if(info['ok']) {
       Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'home');
     } else {
-      bloc.changeDni('');
-      bloc.changePassword('');
       mostrarAlerta(Environment.scaffoldKey.currentContext, info['mensaje'], false);
+      dniController.clear();
+      passController.clear();
     }
   }
 

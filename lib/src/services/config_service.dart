@@ -1,13 +1,23 @@
 import 'dart:convert';
 import 'package:beeper_app/src/global/environment.dart';
-import 'package:beeper_app/src/models/campaign_model.dart';
-import 'package:beeper_app/src/models/campus_model.dart';
+import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/models/profile_model.dart';
 import 'package:beeper_app/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
-class ConfigService {
+class ConfigService extends ChangeNotifier {
   final _prefs = new PreferenciasUsuario();
+  List<Campaign> campaignInfo;
+  List<Profile> profileInfo;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  set isLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
   
   Future<List<Campaign>> getCampaigns(String search, String page) async {
     final url = Uri.http('${Environment.apiUrl}', '/getCampaigns', {'search': search, 'page': page});
@@ -116,5 +126,51 @@ class ConfigService {
     } else {
       return [];
     }
+  }
+
+  Future<bool> saveCampaign(Campaign data) async {
+    final url = Uri.http('${Environment.apiUrl}', '/newCampaign');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer'+this._prefs.token,
+    };
+
+    final campData = {
+      'title': data.title,
+      'desc': data.desc,
+      'status': 1,
+      'responsable': data.responsable,
+      'phone': data.phone
+    };
+
+    final resp = await http.post(url, headers: headers, body: json.encode(campData
+    ));
+
+    if(resp.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void loadCampaigns(String search, String page) async {
+    this.isLoading = true;
+    notifyListeners();
+
+    this.campaignInfo = await getCampaigns(search, page);
+     
+    this.isLoading = false;
+    notifyListeners();
+  }
+
+  void loadProfiles(String search, String page) async {
+    this.isLoading = true;
+    notifyListeners();
+
+    this.profileInfo = await getProfiles(search, page);
+    
+    this.isLoading = false;
+    notifyListeners();
   }
 }

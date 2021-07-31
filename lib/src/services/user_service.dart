@@ -1,11 +1,19 @@
 import 'dart:convert';
 import 'package:beeper_app/src/global/environment.dart';
-import 'package:beeper_app/src/models/user_model.dart';
+import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class UserService {
+class UserService extends ChangeNotifier {
   final _prefs = new PreferenciasUsuario();
+  User userInfo;
+  
+  getUserInformation() async {
+    final usrData = await this.getUserById(_prefs.id);
+    userInfo = usrData['data'];
+    notifyListeners();
+  }
 
   Future<Map<String, dynamic>> login(String dni, String password) async {
     final url = Uri.http('${Environment.apiUrl}','/login');
@@ -21,6 +29,7 @@ class UserService {
       Map<String, dynamic> decodedResp = json.decode(resp.body);
       this._prefs.token = decodedResp['token'];
       this._prefs.id = decodedResp['id'];
+      this.getUserInformation();
 
       return {
         'ok': true,
