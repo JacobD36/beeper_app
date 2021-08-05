@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:beeper_app/src/pages/config/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/config/profiles_page.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
@@ -70,7 +71,7 @@ class ConfigPage extends StatelessWidget {
           children: [
             GestureDetector(
               child: _crearBotonRedondeado(Colors.blue, Icons.account_balance_sharp, 'Sedes'),
-              onTap: () {}
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CampusPage()))
             ),
             GestureDetector(
               child: _crearBotonRedondeado(Colors.green, Icons.account_circle_rounded, 'Perfiles'),

@@ -10,6 +10,7 @@ class ConfigService extends ChangeNotifier {
   final _prefs = new PreferenciasUsuario();
   List<Campaign> campaignInfo;
   List<Profile> profileInfo;
+  List<Campus> campusInfo;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -93,6 +94,8 @@ class ConfigService extends ChangeNotifier {
     final resp = await http.post(url, headers: headers, body: json.encode(profileData));
 
     if(resp.statusCode == 201) {
+      loadProfiles('', '1');
+      notifyListeners();
       return true;
     } else {
       return false;
@@ -128,6 +131,31 @@ class ConfigService extends ChangeNotifier {
     }
   }
 
+  Future<bool> saveCampus(Campus data) async {
+    final url = Uri.http('${Environment.apiUrl}', '/newCampus');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer'+this._prefs.token,
+    };
+
+    final campusData = {
+      'title': data.title,
+      'address': data.address,
+      'status': 1
+    };
+
+    final resp = await http.post(url, headers: headers, body: json.encode(campusData));
+
+    if(resp.statusCode == 201) {
+      loadCampus('', '1');
+      notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> saveCampaign(Campaign data) async {
     final url = Uri.http('${Environment.apiUrl}', '/newCampaign');
 
@@ -148,6 +176,8 @@ class ConfigService extends ChangeNotifier {
     ));
 
     if(resp.statusCode == 201) {
+      loadCampaigns('', '1');
+      notifyListeners();
       return true;
     } else {
       return false;
@@ -170,6 +200,16 @@ class ConfigService extends ChangeNotifier {
 
     this.profileInfo = await getProfiles(search, page);
     
+    this.isLoading = false;
+    notifyListeners();
+  }
+
+  void loadCampus(String search, String page) async {
+    this.isLoading = true;
+    notifyListeners();
+
+    this.campusInfo = await getCampus(search, page);
+
     this.isLoading = false;
     notifyListeners();
   }

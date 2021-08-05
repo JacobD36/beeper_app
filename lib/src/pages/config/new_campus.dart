@@ -1,42 +1,44 @@
-import 'package:beeper_app/src/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/global/environment.dart';
-import 'package:beeper_app/src/models/profile_model.dart';
+import 'package:beeper_app/src/providers/campus_provider.dart';
 import 'package:beeper_app/src/services/config_service.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
 import 'package:provider/provider.dart';
 
-class NewProfile extends StatefulWidget {
-  static final String routeName = 'new_profile';
+class NewCampus extends StatefulWidget {
+  static final String routeName = 'new_campus';
 
   @override
-  _NewProfileState createState() => _NewProfileState();
+  _NewCampusState createState() => _NewCampusState();
 }
 
-class _NewProfileState extends State<NewProfile> {
+class _NewCampusState extends State<NewCampus> {
   final titleController = new TextEditingController();
+  final addressController = new TextEditingController();
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
   }
 
   @override
   void dispose() {
     titleController.dispose();
+    addressController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileForm = Provider.of<ProfileProvider>(context);
-    final profileService = Provider.of<ConfigService>(context);
+    final campusForm = Provider.of<CampusProvider>(context);
+    final campusService = Provider.of<ConfigService>(context);
 
     return Scaffold(
       key: Environment.scaffoldKey,
       appBar: AppBar(
-        title: Text('Nuevo Perfil'),
+        title: Text('Nueva Sede'),
       ),
       drawer: Drawer(
         child: MenuWidget(),
@@ -44,13 +46,13 @@ class _NewProfileState extends State<NewProfile> {
       body: Stack(
         children: [
           BackDesign(),
-          _formData(context, profileForm, profileService)
+          _formData(context, campusForm, campusService)
         ],
       ),
     );
   }
 
-  Widget _formData(BuildContext context, ProfileProvider profileForm, ConfigService profileService) {
+  Widget _formData(BuildContext context, CampusProvider campusForm, ConfigService campusService) {
     final size = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
@@ -66,20 +68,22 @@ class _NewProfileState extends State<NewProfile> {
             vertical: 20.0
           ),
           child: Form(
-            key: profileForm.formKey,
+            key: campusForm.formKey,
             child: Column(
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: Text('Ingrese la información básica del perfil a registrar', style: TextStyle(color: Colors.white, fontSize: 15.0)),
+                  child: Text('Ingrese la información básica de la sede a registrar', style: TextStyle(color: Colors.white, fontSize: 15.0)),
                 ),
                 SizedBox(height: 20.0),
-                _titleInput(profileForm),
+                _titleInput(campusForm),
+                SizedBox(height: 10.0),
+                _addressInput(campusForm),
                 SizedBox(height: 20.0),
                 Divider(color: Colors.white70),
                 SizedBox(height: 10.0),
-                _buttonList(context, profileForm, profileService)
-              ]
+                _buttonList(context, campusForm, campusService)
+              ],
             )
           ),
         ),
@@ -87,7 +91,7 @@ class _NewProfileState extends State<NewProfile> {
     );
   }
 
-  Widget _titleInput(ProfileProvider profileForm) {
+  Widget _titleInput(CampusProvider campusForm) {
     return TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       controller: titleController,
@@ -100,7 +104,7 @@ class _NewProfileState extends State<NewProfile> {
           borderSide: BorderSide(color: Colors.white),
           borderRadius: BorderRadius.circular(20.0)
         ),
-        hintText: 'Nombre del perfil',
+        hintText: 'Nombre de la Sede',
         hintStyle: TextStyle(color: Colors.white38),
         labelText: 'Nombre',
         icon: Icon(Icons.ballot, color: Colors.white),
@@ -109,23 +113,53 @@ class _NewProfileState extends State<NewProfile> {
         ),
       ),
       style: TextStyle(color: Colors.white),
-      onChanged: (value) => profileForm.title = value,
+      onChanged: (value) => campusForm.title = value,
       validator: (value) {
         return (value != null && value.length >= 3) ? null : 'Mínimo 3 caracteres';
       },
     );
   }
 
-  _saveProfile(BuildContext context, Profile profile, ProfileProvider profileForm, ConfigService profileService) async {
-    profileForm.isLoading = true;
-
-    await profileService.saveProfile(profile);
-    
-    profileForm.isLoading = false;
+  Widget _addressInput(CampusProvider campusForm) {
+    return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      controller: addressController,
+      maxLines: 3,
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+          borderRadius: BorderRadius.circular(20.0)
+        ),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+          borderRadius: BorderRadius.circular(20.0)
+        ),
+        hintText: 'Dirección de la Sede',
+        hintStyle: TextStyle(color: Colors.white38),
+        labelText: 'Nombre',
+        icon: Icon(Icons.home, color: Colors.white),
+        labelStyle: new TextStyle(
+          color: Colors.white
+        ),
+      ),
+      style: TextStyle(color: Colors.white),
+      onChanged: (value) => campusForm.address = value,
+      validator: (value) {
+        return (value != null && value.length >= 10) ? null : 'Mínimo 10 caracteres';
+      },
+    );
   }
 
-  Widget _buttonList(BuildContext context, ProfileProvider profileForm, ConfigService profileService) {
-    final Profile profileData = new Profile();
+  _saveCampus(BuildContext context, Campus campus, CampusProvider campusForm, ConfigService campusService) async {
+    campusForm.isLoading = true;
+
+    await campusService.saveCampus(campus);
+
+    campusForm.isLoading = false;
+  }
+
+  Widget _buttonList(BuildContext context, CampusProvider campusForm, ConfigService campusService) {
+    final Campus campusData = new Campus();
 
     return Container(
       child: Center(
@@ -135,26 +169,28 @@ class _NewProfileState extends State<NewProfile> {
             ElevatedButton(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 15.0),
-                child: profileForm.isLoading ? Text('Espere') : Text('Grabar'),
+                child: campusForm.isLoading ? Text('Espere') : Text('Grabar'),
               ),
               style: ButtonStyle(
                 elevation: MaterialStateProperty.all(0.0),
                 foregroundColor: MaterialStateProperty.all(Colors.white),
-                backgroundColor: profileForm.isLoading ? MaterialStateProperty.all(Colors.grey[600]) : MaterialStateProperty.all(Colors.blue[600]),
+                backgroundColor: campusForm.isLoading ? MaterialStateProperty.all(Colors.grey[600]) : MaterialStateProperty.all(Colors.blue[600]),
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)))
               ),
-              onPressed: profileForm.isLoading ? null : () {
+              onPressed: campusForm.isLoading ? null : () {
                 FocusScope.of(context).unfocus();
 
-                if(!profileForm.isValidForm()) return;
+                if(!campusForm.isValidForm()) return;
 
-                profileData.title = profileForm.title;
+                campusData.title = campusForm.title;
+                campusData.address = campusForm.address;
 
-                _saveProfile(context, profileData, profileForm, profileService);
+                _saveCampus(context, campusData, campusForm, campusService);
                 
                 titleController.clear();
+                addressController.clear();
 
-                Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'profiles');
+                Navigator.pushReplacementNamed(Environment.scaffoldKey.currentContext, 'campus');
               }
             ),
             SizedBox(width: 10.0),

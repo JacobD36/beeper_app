@@ -1,3 +1,5 @@
+import 'package:beeper_app/src/pages/config/campus_page.dart';
+import 'package:beeper_app/src/pages/config/new_campus.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/campaign_page.dart';
 import 'package:beeper_app/src/pages/config/new_profile.dart';
@@ -16,5 +18,7 @@ Map<String, WidgetBuilder> appRoutes() {
     NewCampaign.routeName: (BuildContext context) => NewCampaign(),
     ProfilesPage.routeName: (BuildContext context) => ProfilesPage(),
     NewProfile.routeName: (BuildContext context) => NewProfile(),
+    CampusPage.routeName: (BuildContext context) => CampusPage(),
+    NewCampus.routeName: (BuildContext context) => NewCampus()
   };
 }

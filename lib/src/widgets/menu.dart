@@ -17,6 +17,7 @@ class _MenuWidgetState extends State<MenuWidget> {
     final userService = Provider.of<UserService>(context);
     final campaignService = Provider.of<ConfigService>(context);
     final profileService = Provider.of<ConfigService>(context);
+    final campusService = Provider.of<ConfigService>(context);
 
     return Drawer(
       child: SafeArea(
@@ -96,6 +97,7 @@ class _MenuWidgetState extends State<MenuWidget> {
               onTap: () {
                 //Navigator.pushReplacementNamed(context, 'config');
                 profileService.loadProfiles('', '1');
+                campusService.loadCampus('', '1');
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ConfigPage()));
               }
             ),

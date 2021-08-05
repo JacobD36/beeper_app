@@ -10,9 +10,11 @@ class UserService extends ChangeNotifier {
   User userInfo;
   
   getUserInformation() async {
-    final usrData = await this.getUserById(_prefs.id);
-    userInfo = usrData['data'];
-    notifyListeners();
+    if(this._prefs.id != '') {
+      final usrData = await this.getUserById(_prefs.id);
+      userInfo = usrData['data'];
+      notifyListeners();
+    }
   }
 
   Future<Map<String, dynamic>> login(String dni, String password) async {

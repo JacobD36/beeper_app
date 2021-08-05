@@ -1,78 +1,75 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:beeper_app/src/services/config_service.dart';
 import 'package:beeper_app/src/models/models.dart';
-import 'package:beeper_app/src/pages/new_campaign.dart';
+import 'package:beeper_app/src/pages/config/new_campus.dart';
+import 'package:beeper_app/src/services/services.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
-class CampaignPage extends StatefulWidget {
-  static final String routeName = 'campaign';
+class CampusPage extends StatefulWidget {
+  static final String routeName = 'campus';
 
   @override
-  _CampaignPageState createState() => _CampaignPageState();
+  _CampusPageState createState() => _CampusPageState();
 }
 
-class _CampaignPageState extends State<CampaignPage> {
+class _CampusPageState extends State<CampusPage> {
   @override
   Widget build(BuildContext context) {
-    final campaignService = Provider.of<ConfigService>(context);
-    
-    return WillPopScope(
-      onWillPop: () => exit(0),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Campañas'),
+    final campusService = Provider.of<ConfigService>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sedes')
+      ),
+      drawer: Drawer(
+        child: MenuWidget(),
+      ),
+      body: ModalProgressHUD(
+        child: Stack(
+          children: [
+            BackDesign(),
+            _campusList(campusService.campusInfo)
+          ],
         ),
-        drawer: Drawer(
-          child: MenuWidget()
-        ),
-        body: ModalProgressHUD(
-          child: Stack(
-            children: [
-              BackDesign(),
-              _campList(campaignService.campaignInfo),
-            ],
-          ),
-          inAsyncCall: campaignService.isLoading,
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add_circle_outline),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewCampaign())),
-        ),
+        inAsyncCall: campusService.isLoading,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add_circle_outline),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewCampus())),
       ),
     );
   }
 
-  Widget _campList(List<Campaign> campaigns) {
-    if(campaigns == null) return Container();
-    if(campaigns.length == 0) {
+  Widget _campusList(List<Campus> campus) {
+    if(campus == null) return Container();
+
+    if(campus.length == 0) {
       return Center(
         child: _noData(),
       );
     } else {
       return ListView.builder(
-        itemCount: campaigns.length,
-        itemBuilder: (context, i) => _campItem2(context, campaigns[i]),
+        itemCount: campus.length,
+        itemBuilder: (context, i) => _campusItem(context, campus[i])
       );
     }
   }
 
-  Widget _campItem2(BuildContext context, Campaign campaign) {
+  Widget _campusItem(BuildContext context, Campus campus) {
     final size = MediaQuery.of(context).size;
 
     return Dismissible(
       key: UniqueKey(),
       background: Container(
         color: Colors.red,
-        child: Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete, color: Colors.white)
       ),
       onDismissed: null,
       child: GestureDetector(
         onTap: () {
-        
+
         },
         child: Container(
           padding: EdgeInsets.all(5.0),
@@ -84,8 +81,8 @@ class _CampaignPageState extends State<CampaignPage> {
           ),
           child: ListTile(
             leading: Icon(Icons.donut_large, color: Colors.blue),
-            title: Text(campaign.title, style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold)),
-            subtitle: Text(campaign.desc, style: TextStyle(color: Colors.white)),
+            title: Text(campus.title, style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold)),
+            subtitle: Text(campus.address, style: TextStyle(color: Colors.white)),
           ),
         ),
       )

@@ -20,6 +20,7 @@ class _NewCampaignState extends State<NewCampaign> {
   final descController = new TextEditingController();
   final respController = new TextEditingController();
   final phoneController = new TextEditingController();
+  
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _NewCampaignState extends State<NewCampaign> {
   @override
   Widget build(BuildContext context) {
     final campaignForm = Provider.of<CampaignProvider>(context);
+    final campaignService = Provider.of<ConfigService>(context);
 
     return Scaffold(
       key: Environment.scaffoldKey,
@@ -50,49 +52,51 @@ class _NewCampaignState extends State<NewCampaign> {
       body: Stack(
         children: [
           BackDesign(),
-          _formData(context, campaignForm)
+          _formData(context, campaignForm, campaignService)
         ]
       )
     );
   }
 
-  Widget _formData(BuildContext context, CampaignProvider campaignForm) {
+  Widget _formData(BuildContext context, CampaignProvider campaignForm, ConfigService campaignService) {
     final size = MediaQuery.of(context).size;
 
-    return Container(
-      width: size.width,
-      height: size.height,
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(62, 66, 107, 0.7)
-      ),
+    return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10.0,
-          vertical: 20.0
+        width: size.width,
+        height: size.height,
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(62, 66, 107, 0.7)
         ),
-        child: Form(
-          key: campaignForm.formKey,
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
-                child: Text('Ingrese la información básica de la campaña a registrar', style: TextStyle(color: Colors.white, fontSize: 15.0)),
-              ),
-              SizedBox(height: 20.0),
-              _titleInput(campaignForm),
-              SizedBox(height: 10.0),
-              _descInput(campaignForm),
-              SizedBox(height: 10.0),
-              _responsableInput(campaignForm),
-              SizedBox(height: 10.0),
-              _phoneInput(campaignForm),
-              SizedBox(height: 20.0),
-              Divider(color: Colors.white70),
-              SizedBox(height: 10.0),
-              _buttonList(context, campaignForm)
-            ],
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 20.0
+          ),
+          child: Form(
+            key: campaignForm.formKey,
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text('Ingrese la información básica de la campaña a registrar', style: TextStyle(color: Colors.white, fontSize: 15.0)),
+                ),
+                SizedBox(height: 20.0),
+                _titleInput(campaignForm),
+                SizedBox(height: 10.0),
+                _descInput(campaignForm),
+                SizedBox(height: 10.0),
+                _responsableInput(campaignForm),
+                SizedBox(height: 10.0),
+                _phoneInput(campaignForm),
+                SizedBox(height: 20.0),
+                Divider(color: Colors.white70),
+                SizedBox(height: 10.0),
+                _buttonList(context, campaignForm, campaignService)
+              ],
+            )
           )
-        )
+        ),
       ),
     );
   }
@@ -237,9 +241,7 @@ class _NewCampaignState extends State<NewCampaign> {
     }
   }*/
 
-   _saveCampaign(BuildContext context, Campaign camp, CampaignProvider campaignForm) async {
-    final campaignService = Provider.of<ConfigService>(context);
-
+   _saveCampaign(BuildContext context, Campaign camp, CampaignProvider campaignForm, ConfigService campaignService) async {
     campaignForm.isLoading = true;
 
     await campaignService.saveCampaign(camp);
@@ -247,7 +249,7 @@ class _NewCampaignState extends State<NewCampaign> {
     campaignForm.isLoading = false;
   }
 
-  Widget _buttonList(BuildContext context, CampaignProvider campaignForm) {
+  Widget _buttonList(BuildContext context, CampaignProvider campaignForm, ConfigService campaignService) {
     final Campaign campData = new Campaign();
 
     return Container(
@@ -276,7 +278,7 @@ class _NewCampaignState extends State<NewCampaign> {
                 campData.responsable = campaignForm.responsable;
                 campData.phone = campaignForm.phone;
 
-                _saveCampaign(context, campData, campaignForm);
+                _saveCampaign(context, campData, campaignForm, campaignService);
 
                 titleController.clear();
                 descController.clear();

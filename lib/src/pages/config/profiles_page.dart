@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'package:beeper_app/src/services/config_service.dart';
 import 'package:flutter/material.dart';
 import 'package:beeper_app/src/pages/config/new_profile.dart';
 import 'package:beeper_app/src/models/models.dart';
 import 'package:beeper_app/src/utils/back_design.dart';
 import 'package:beeper_app/src/widgets/menu.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
 class ProfilesPage extends StatefulWidget {
@@ -19,31 +19,31 @@ class _ProfilesPageState extends State<ProfilesPage> {
   Widget build(BuildContext context) {
     final profileService = Provider.of<ConfigService>(context);
 
-    return WillPopScope(
-      onWillPop: () => exit(0),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Perfiles'),
-        ),
-        drawer: Drawer(
-          child: MenuWidget()
-        ),
-        body: Stack(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Perfiles'),
+      ),
+      drawer: Drawer(
+        child: MenuWidget()
+      ),
+      body: ModalProgressHUD(
+        child: Stack(
           children: [
             BackDesign(),
             _profileList(profileService.profileInfo)
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add_circle_outline),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewProfile())),
-        ),
+        inAsyncCall: profileService.isLoading,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add_circle_outline),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewProfile())),
       ),
     );
   }
 
   Widget _profileList(List<Profile> profiles) {
-    if(profiles == null) return CircularProgressIndicator();
+    if(profiles == null) return Container();
 
     if(profiles.length == 0) {
       return Center(
